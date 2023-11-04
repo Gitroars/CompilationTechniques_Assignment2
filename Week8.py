@@ -1,10 +1,8 @@
 import sys
 import math
-import re
 
 expression = ""
-tokens = []
-
+index = 0
 
 class TreeNode:
     def __init__(self, value, left=None, right=None):
@@ -12,59 +10,62 @@ class TreeNode:
         self.left = left
         self.right = right
 
-
 def error(message):
     sys.stderr.write(f"Error: {message}\n")
     sys.exit(1)
 
+def match(expected_token):
+    global index
+    while index < len(expression) and expression[index].isspace():
+        index += 1
 
-def tokenize(expression):
-    # Define regular expressions for numbers, operators, and parentheses
-    regex = r"(\d+|\+|-|\*|/|%|\(|\))"
-    tokens = re.findall(regex, expression)
-    # Remove whitespace from the list of tokens
-    tokens = [token for token in tokens if not token.isspace()]
-    return tokens
-
+    if index < len(expression) and expression[index] == expected_token:
+        index += 1
+    else:
+        error(f"Expected '{expected_token}'")
 
 def expr():
     temp = term()
 
-    while tokens and (tokens[0] in "+-"):
-        op = tokens.pop(0)
+    while index < len(expression) and (expression[index] in "+-"):
+        op = expression[index]
+        match(op)
         right = term()
         temp = TreeNode(op, temp, right)
 
     return temp
 
-
 def term():
     temp = factor()
 
-    while tokens and (tokens[0] in "*/%"):
-        op = tokens.pop(0)
+    while index < len(expression) and (expression[index] in "*/%"):
+        op = expression[index]
+        match(op)
         right = factor()
         temp = TreeNode(op, temp, right)
 
     return temp
 
-
 def factor():
-    token = tokens.pop(0)
+    global index
 
-    if token == "(":
+    while index < len(expression) and expression[index].isspace():
+        index += 1
+
+    if index < len(expression) and expression[index] == '(':
+        match('(')
         temp = expr()
-        if tokens.pop(0) != ")":
-            error("Expected closing parenthesis")
-    elif token.isdigit() or (
-        token == "-" and (not tokens or tokens[0] in "0123456789")
-    ):
-        temp = TreeNode(token)
+        match(')')
+    elif index < len(expression) and expression[index].isdigit():
+        value = 0
+        while index < len(expression) and expression[index].isdigit():
+            value = value * 10 + int(expression[index])
+            index += 1
+        temp = TreeNode(str(value))
     else:
         error("Invalid expression")
 
     return temp
-
 
 def display_parse_tree(node, level=0):
     if node is not None:
@@ -72,34 +73,36 @@ def display_parse_tree(node, level=0):
         print(" " * 4 * level + node.value)
         display_parse_tree(node.left, level + 1)
 
-
 def calculate(node):
     if node.left is None and node.right is None:
         return int(node.value)
     left_result = calculate(node.left)
     right_result = calculate(node.right)
-    if node.value == "+":
+    if node.value == '+':
         return left_result + right_result
-    elif node.value == "-":
+    elif node.value == '-':
         return left_result - right_result
-    elif node.value == "*":
+    elif node.value == '*':
         return left_result * right_result
-    elif node.value == "/":
+    elif node.value == '/':
         if right_result == 0:
             error("Division by zero")
         return left_result / right_result
-    elif node.value == "%":
+    elif node.value == '%':
         if right_result == 0:
             error("Modulo by zero")
         return left_result % right_result
 
-
 if __name__ == "__main__":
     expression = input("Enter the calculation string, e.g. '34 + 45 * 4 % 7': ")
-    tokens = tokenize(expression)
+    index = 0
+
     parse_tree = expr()
 
-    if not tokens:
+    while index < len(expression) and expression[index].isspace():
+        index += 1
+
+    if index == len(expression):
         print("Parse Tree:")
         display_parse_tree(parse_tree)
         result = calculate(parse_tree)
