@@ -86,7 +86,7 @@ def factor():
         )
     ):
         value = ""
-        while index < len(expression) and (expression[index].isdigit() or expression[index] == " "):
+        while index < len(expression) and (expression[index].isdigit() or expression[index] == " " or expression[index] == "."):
             if expression[index] != " ":
                 value += expression[index]
             index += 1
@@ -126,8 +126,8 @@ def calculate(node):
             if right_result == 0:
                 error("Modulo by zero")
             return left_result % right_result
-    if node.value.isdigit():
-        return int(node.value)
+    if node.value.isdigit() or node.value.replace('.', '').isdigit():
+        return float(node.value)
     return float(node.value)
 
 
