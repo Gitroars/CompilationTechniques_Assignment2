@@ -1,5 +1,9 @@
 # CompilationTechniques_Assignment2
 
+### Assignment By:
+- Arvin Yuwono / 2502009721
+- Christopher Owen / 2502019180
+
 ## Explanation & Discussion
 Top-down Parsing
 
@@ -10,7 +14,3 @@ The sequence of function calls and the structure of the code ensure that the par
 Depth-first Search
 
 The parser code employs a depth-first search strategy while parsing the input mathematical expression. Depth-first search is a common strategy used in recursive descent parsing, which is the parsing technique used in this code. The parser explores as far down a particular path in the input expression as possible before backtracking when necessary. This strategy ensures that the parser analyzes the input expression from left to right and constructs a parse tree that accurately represents the operator precedence and associativity rules of the mathematical expressions.
-
-### Assignment By:
-- Arvin Yuwono / 2502009721
-- Christopher Owen / 2502019180
