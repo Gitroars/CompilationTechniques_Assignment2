@@ -116,6 +116,8 @@ def calculate(node):
             if right_result == 0:
                 error("Modulo by zero")
             return left_result % right_result
+    if node.value.isdigit():
+        return int(node.value)
     return float(node.value)
 
 
